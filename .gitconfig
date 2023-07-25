@@ -1,13 +1,45 @@
 [user]
-    name = Ingvar Sigurdsson 
-    email = ingvars@tmsoftware.is
+    name = Ingvar Sigurdsson
+    email = gvarihendrix@gmail.com
 [core]
+    longpaths = true
+    autocrlf = true
     editor = vim
 [web]
-    browser = google-chrome
+    browser = "chrome"
 [rerere]
     enabled = 1
     autoupdate = 1
+[merge]
+    renormalize = true
+    tool = kdiff3
+[mergetool "kdiff3"]
+    # path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
+    trustExitCode = false
+[diff]
+    guitool = kdiff3
+[difftool "kdiff3"]
+    # path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
+    trustExitCode = false
+
+# [merge]
+#     renormalize = true
+#     guitool = kdiff3
+# [diff]
+#     tool = kdiff3
+# [difftool]
+#     prompt = false
+# [difftool "kdiff3"]
+#     # Unix style paths must be converted to windows path style
+#     cmd = kdiff3.exe \"`wslpath -w $LOCAL`\" \"`wslpath -w $REMOTE`\"
+#     trustExitCode = false
+# [mergetool]
+#     keepBackup = false
+#     prompt = false
+# [mergetool "kdiff3"]
+#     path = kdiff3.exe
+#     trustExitCode = false
+
 [alias]
     s = status
     sb = status -s -b
@@ -97,6 +129,8 @@
     w = show
     #############
     human = name-rev --name-only --refs=refs/heads/*
+    #############
+    squash = "!f(){ git reset --soft HEAD~${1} && git commit --edit -m\"$(git log --format=%B --reverse HEAD..HEAD@{1})\"; };f"
 [color]
     ui = true
 [color "branch"]
@@ -114,6 +148,7 @@
     changed = yellow bold
     untracked = red bold
 [url "https://"]
-	insteadOf = git://
+    insteadOf = git://
 [push]
-	default = simple
+    default = simple
+
