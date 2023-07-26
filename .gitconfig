@@ -1,10 +1,9 @@
 [user]
-    name = Ingvar Sigurdsson
+    name = Ingvar Sigurðsson
     email = gvarihendrix@gmail.com
 [core]
     longpaths = true
-    autocrlf = true
-    editor = vim
+    editor = nvim
 [web]
     browser = "chrome"
 [rerere]
