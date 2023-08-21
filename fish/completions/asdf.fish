@@ -1,0 +1,1 @@
+/Users/ingvar/.asdf/completions/asdf.fish
