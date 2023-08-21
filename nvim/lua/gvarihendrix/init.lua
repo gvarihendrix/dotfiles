@@ -1,7 +1,7 @@
 require('gvarihendrix.packer')
 require('gvarihendrix.set')
 require('gvarihendrix.remap')
-
+require('gvarihendrix.tree')
 
 vim.cmd([[
   augroup packer_user_config

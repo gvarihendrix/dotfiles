@@ -13,9 +13,9 @@ local function dump(o)
    end
 end
 
--- require('plugin')
-local ingvar = { first_name = "Ingvar", last_name = "Sigurðsson" }
-print("Hello " .. dump(ingvar))
 
+local user = os.getenv('USER')
+local d = os.date()
 
+print('Hello ' .. user .. ', at: ' .. d)
 
