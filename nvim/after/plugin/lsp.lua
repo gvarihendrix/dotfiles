@@ -69,6 +69,9 @@ rt.setup({
   },
 })
 
+local elixir = require('elixir')
+elixir.setup()
+
 vim.diagnostic.config({
     virtual_text = true
 })

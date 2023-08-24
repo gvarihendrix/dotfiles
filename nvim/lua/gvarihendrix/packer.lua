@@ -28,9 +28,9 @@ return require('packer').startup(function (use)
   use 'shaunsingh/nord.nvim'
 
   use({
-      "folke/trouble.nvim",
+      'folke/trouble.nvim',
       config = function()
-          require("trouble").setup {
+          require('trouble').setup {
               icons = false,
               -- your configuration comes here
               -- or leave it empty to use the default settings
@@ -46,12 +46,12 @@ return require('packer').startup(function (use)
       ts_update()
     end,
   }
-  use("nvim-treesitter/playground")
-  use("theprimeagen/harpoon")
-  use("theprimeagen/refactoring.nvim")
-  use("mbbill/undotree")
-  use("tpope/vim-fugitive")
-  use("nvim-treesitter/nvim-treesitter-context");
+  use('nvim-treesitter/playground')
+  use('theprimeagen/harpoon')
+  use('theprimeagen/refactoring.nvim')
+  use('mbbill/undotree')
+  use('tpope/vim-fugitive')
+  use('nvim-treesitter/nvim-treesitter-context');
 
   use {
 	  'VonHeikemen/lsp-zero.nvim',
@@ -62,6 +62,7 @@ return require('packer').startup(function (use)
 		  {'williamboman/mason.nvim'},
 		  {'williamboman/mason-lspconfig.nvim'},
           {'simrat39/rust-tools.nvim'},
+          {'elixir-tools/elixir-tools.nvim', tag = 'stable', requires = { 'nvim-lua/plenary.nvim' }},
 
 		  -- Autocompletion
 		  {'hrsh7th/nvim-cmp'},
@@ -77,9 +78,9 @@ return require('packer').startup(function (use)
 	  }
   }
 
-  use("folke/zen-mode.nvim")
-  use("eandrju/cellular-automaton.nvim")
-  use("laytan/cloak.nvim")
+  use('folke/zen-mode.nvim')
+  use('eandrju/cellular-automaton.nvim')
+  use('laytan/cloak.nvim')
 
   use {
     'nvim-lualine/lualine.nvim',
