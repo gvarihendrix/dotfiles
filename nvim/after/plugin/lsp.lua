@@ -4,7 +4,13 @@ lsp.preset('recommended')
 
 lsp.ensure_installed({
     'tsserver',
-    'rust_analyzer'
+    'rust_analyzer',
+    'lua_ls',
+    'erlangls',
+    'elixirls',
+    'csharp_ls',
+    'cssls',
+    'tailwindcss',
 })
 
 -- Fix undefined global 'vim'
