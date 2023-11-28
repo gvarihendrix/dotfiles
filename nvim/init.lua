@@ -1,21 +1,63 @@
-require('gvarihendrix')
+--[[
 
-local function dump(o)
-   if type(o) == 'table' then
-      local s = '{ '
-      for k,v in pairs(o) do
-         if type(k) ~= 'number' then k = '"'..k..'"' end
-         s = s .. '['..k..'] = ' .. dump(v) .. ','
-      end
-      return s .. '} '
-   else
-      return tostring(o)
-   end
-end
+=====================================================================
+==================== READ THIS BEFORE CONTINUING ====================
+=====================================================================
+
+Kickstart.nvim is *not* a distribution.
+
+Kickstart.nvim is a template for your own configuration.
+  The goal is that you can read every line of code, top-to-bottom, understand
+  what your configuration is doing, and modify it to suit your needs.
+
+  Once you've done that, you should start exploring, configuring and tinkering to
+  explore Neovim!
+
+  If you don't know anything about Lua, I recommend taking some time to read through
+  a guide. One possible example:
+  - https://learnxinyminutes.com/docs/lua/
 
 
-local user = os.getenv('USER')
-local d = os.date()
+  And then you can explore or search through `:help lua-guide`
+  - https://neovim.io/doc/user/lua-guide.html
 
-print('Hello ' .. user .. ', at: ' .. d)
 
+--]]
+
+--  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
+vim.g.mapleader = ','
+vim.g.maplocalleader = ','
+
+-- [[ Install `lazy.nvim` plugin manager ]]
+require('lazy-bootstrap')
+
+-- [[ Configure plugins ]]
+require('lazy-plugins')
+
+-- [[ Setting options ]]
+require('options')
+
+-- [[ Basic Keymaps ]]
+require('keymaps')
+
+-- [[ Configure Telescope ]]
+-- (fuzzy finder)
+require('telescope-setup')
+
+-- [[ Configure Treesitter ]]
+-- (syntax parser for highlighting)
+require('treesitter-setup')
+
+-- [[ Configure LSP ]]
+-- (Language Server Protocol)
+require('lsp-setup')
+
+-- [[ Configure nvim-cmp ]]
+-- (completion)
+require('cmp-setup')
+
+-- [[ Configure conform ]]
+-- (formatting)
+require('conform-setup')
+-- The line beneath this is called `modeline`. See `:help modeline`
+-- vim: ts=2 sts=2 sw=2 et
