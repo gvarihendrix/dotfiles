@@ -55,6 +55,9 @@ require('lsp-setup')
 -- [[ Configure nvim-cmp ]]
 -- (completion)
 require('cmp-setup')
+-- [[ Configure oil ]]
+-- (directory explorer)
+require('oil-setup')
 
 -- [[ Configure conform ]]
 -- (formatting)
