@@ -27,6 +27,7 @@ Kickstart.nvim is a template for your own configuration.
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
+vim.loader.enable()
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 require('lazy-bootstrap')
