@@ -1,5 +1,4 @@
 # import = ["~/c/sesh/sesh.toml"]
-
 [default_session]
 startup_command = "nvim +GoToFile"
 
@@ -14,19 +13,19 @@ path = "~/"
 
 [[session]]
 name = "Code 💻"
-path = "~/c"
+path = "~/repos"
 startup_command = "l"
 
 [[session]]
 name = "tmux config"
-path = "~/c/dotfiles/.config/tmux"
+path = "~/repos/dotfiles/.config/tmux"
 # tmuxp = "~/c/dotfiles/.config/tmux/tmuxp-tmux.yml"
 # tmuxp = "/Users/joshmedeski/c/dotfiles/.config/tmux/tmuxp-tmux.yml"
 startup_command = "nvim tmux.conf"
 
 [[session]]
 name = "gitmux config"
-path = "~/c/dotfiles/.config/tmux"
+path = "~/repos/dotfiles/.config/tmux"
 startup_command = "nvim gitmux.conf"
 
 # [[session]]
@@ -39,69 +38,49 @@ startup_command = "nvim gitmux.conf"
 
 [[session]]
 name = "neovim config"
-path = "~/c/dotfiles/.config/nvim"
+path = "~/repos/dotfiles/.config/nvim"
 
 [[session]]
 name = "fish config"
-path = "~/c/dotfiles/.config/fish"
+path = "~/repos/dotfiles/.config/fish"
 startup_command = "nvim config.fish"
 
 [[session]]
 name = "yazi config"
-path = "~/c/dotfiles/.config/yazi"
+path = "~/repos/dotfiles/.config/yazi"
 startup_command = "nvim yazi.toml"
 
 [[session]]
 name = "wezterm config"
-path = "~/c/dotfiles/.config/wezterm"
+path = "~/repos/dotfiles/.config/wezterm"
 startup_command = "nvim wezterm.lua"
 
-[[session]]
-name = "nutiliti new worktree"
-path = "~/c/nu"
-# TODO: auto-close this session when the worktree has been created successfully?  
-# TODO: append [[session]] ./nu/{name}/package/* to this config for dev mode bonus
-startup_commad = "nu_new_worktree"
+# [[session]]
+# name = "nutiliti new worktree"
+# path = "~/repos/nu"
+# # TODO: auto-close this session when the worktree has been created successfully?  
+# # TODO: append [[session]] ./nu/{name}/package/* to this config for dev mode bonus
+# startup_commad = "nu_new_worktree"
 
-[[session]]
-name = "second brain 🧠"
-path = "~/c/second-brain"
-startup_command = "nvim +ObsidianToday"
+# [[session]]
+# name = "second brain 🧠"
+# path = "~/c/second-brain"
+# startup_command = "nvim +ObsidianToday"
 
 [[session]]
 name = "sesh config"
-path = "~/c/dotfiles/.config/sesh"
+path = "~/repos/dotfiles/.config/sesh"
 startup_command = "nvim sesh.toml"
 
 [[session]]
 name = "my custom binaries"
-path = "~/c/dotfiles/.config/bin"
+path = "~/repos/dotfiles/.config/bin"
 
 [[session]]
 name = "dotfiles"
-path = "~/c/dotfiles"
+path = "~/repos/dotfiles"
 startup_command = "lazygit"
 # startup_command = "u"
-
-[[session]]
-name = "blog posts"
-path = "~/c/joshmedeski.com/src/content/posts"
-
-[[session]]
-path = "~/c/joshmedeski.com"
-startup_script = "~/.config/sesh/scripts/node_dev"
-# or
-# tmuxp = "~/.config/tmux/tmuxp/joshmedeski.com.yml"
-# or
-# tmuxinator = "~/.config/tmux/tmuxinator/joshmedeski.com.yml"
-
-[[session]]
-session_path = "~/c/nu/main/packages/*"
-script_path = "~/.config/sesh/scripts/node_dev"
-
-
-# TODO: implement this 
-# script_command = "nvim ~/.tmux"
 
 [[session]]
 name = "tmux-fzf-url 🖇️"

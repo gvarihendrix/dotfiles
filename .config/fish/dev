@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 rm -rf ~/.config/fish
-ln -s $(pwd) ~/.config/fish
+ln -s "$(pwd)" ~/.config/fish
