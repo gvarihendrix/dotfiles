@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 rm -rf ~/.config/tmux
-ln -s "$(pwd)" ~/.config/tmux
+rsync -a "$(pwd)" ~/.config/tmux
