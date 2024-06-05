@@ -14,7 +14,10 @@ local config = {
 		brightness = 1.0,
 	},
 	launch_menu = {},
-	enable_tab_bar = false,
+	enable_tab_bar = true,
+	hide_tab_bar_if_only_one_tab = true,
+	tab_bar_at_bottom = true,
+	use_fancy_tab_bar = false,
 	disable_default_key_bindings = true,
 	leader = { key = "a", mods = "CTRL" },
 	keys = {
