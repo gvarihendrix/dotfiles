@@ -1,10 +1,20 @@
-eval (/opt/homebrew/bin/brew shellenv)
+set -l os (uname)
+
+
+switch (uname)
+       case Darwin
+            eval (/opt/homebrew/bin/brew shellenv)
+            fnm --log-level quiet env --use-on-cd | source
+            source ~/.asdf/asdf.fish
+            echo "This is Darwin/Apple"
+       case Linux
+            echo "This is linux"
+end
 
 
 fish_ssh_agent
 starship init fish | source
 zoxide init fish | source
-fnm --log-level quiet env --use-on-cd | source
 direnv hook fish | source
 set -g direnv_fish_mode eval_on_arrow # trigger direnv at prompt, and on every arrow-based directory change
 
@@ -24,11 +34,8 @@ end
 
 set -x LANG en_US.UTF-8
 
-
 function fish_right_prompt -d "Write out the right prompt"
     date '+%H:%M'
 end
-
-source ~/.asdf/asdf.fish
 
 alias vim=nvim
