@@ -1,6 +1,3 @@
-set -l os (uname)
-
-
 switch (uname)
        case Darwin
             eval (/opt/homebrew/bin/brew shellenv)
