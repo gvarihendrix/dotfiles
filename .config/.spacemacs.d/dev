@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+rm -rf ~/.spacemacs.d
+ln -s "$(pwd)" ~/.spacemacs.d
