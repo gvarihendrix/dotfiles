@@ -14,7 +14,7 @@ SETUVAR --export OLLAMA_ORIGINS:app\x3a//obsidian\x2emd\x2a
 SETUVAR --export SKIM_DEFAULT_OPTIONS:\x2d\x2dreverse\x1e\x2d\x2dansi
 SETUVAR --export T_FZF_FIND_BINDING:ctrl\x2df\x3achange\x2dprompt\x28\uf07c\x20\x20\x29\x2breload\x28fd\x20\x2dH\x20\x2dd\x202\x20\x2dt\x20d\x20\x2dE\x20\x2eTrash\x20\x2e\x20\x7e\x29
 SETUVAR --export T_FZF_PROMPT:\U0001f9e0\x20
-SETUVAR --export T_REPOS_DIR:/Users/ingvar/c
+SETUVAR --export T_REPOS_DIR:/home/ingvar/c
 SETUVAR --export T_SESSION_USE_GIT_ROOT:true
 SETUVAR VIRTUAL_ENV_DISABLE_PROMPT:true
 SETUVAR --export VISUAL:nvim
