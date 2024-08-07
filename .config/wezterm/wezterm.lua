@@ -5,7 +5,7 @@ local k = require("utils/keys")
 
 local config = {
 	default_prog = { "/opt/homebrew/bin/fish", "-l" },
-	color_scheme = "rose-pine",
+	color_scheme = "Catppuccin Mocha",
 	font = wezterm.font("JetBrains Mono", { weight = "Bold" }),
 	font_size = 16.0,
 	inactive_pane_hsb = {

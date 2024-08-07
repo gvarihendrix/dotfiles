@@ -269,7 +269,7 @@ It should only modify the values of Spacemacs settings."
    ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '("Source Code Pro"
                                :size 13.0
-                               :weight bold
+                               :weight normal
                                :width normal
                                :powerline-scale 1.5)
 
