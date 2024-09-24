@@ -1,45 +1,41 @@
 [user]
-    name = Ingvar Sigurðsson
     email = gvarihendrix@gmail.com
+    name = Ingvar Sigurðsson
 [core]
     longpaths = true
-    editor = nvim
-[web]
-    browser = "chrome"
+    editor = "nvim --clean"
+    pager = delta
 [rerere]
     enabled = 1
     autoupdate = 1
 [merge]
-    renormalize = true
-    tool = kdiff3
-[mergetool "kdiff3"]
-    # path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
-    trustExitCode = false
+    conflictstyle = diff3
 [diff]
-    guitool = kdiff3
-[difftool "kdiff3"]
-    # path = "C:\\Program Files\\KDiff3\\kdiff3.exe"
-    trustExitCode = false
-
-# [merge]
-#     renormalize = true
-#     guitool = kdiff3
-# [diff]
-#     tool = kdiff3
-# [difftool]
-#     prompt = false
-# [difftool "kdiff3"]
-#     # Unix style paths must be converted to windows path style
-#     cmd = kdiff3.exe \"`wslpath -w $LOCAL`\" \"`wslpath -w $REMOTE`\"
-#     trustExitCode = false
-# [mergetool]
-#     keepBackup = false
-#     prompt = false
-# [mergetool "kdiff3"]
-#     path = kdiff3.exe
-#     trustExitCode = false
-
+    colorMoved = default
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+[delta]
+    navigate = true
+    # ligth = false
+    line-numbers = true
+    features = decorations
+    # side-by-side = true
+[delta "interactive"]
+    keep-plus-minus-markers = false
+[delta "decorations"]
+    commit-decoration-style = blue ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = blue box
+    hunk-header-file-style = red
+    hunk-header-line-number-style = "#067a00"
+    hunk-header-style = file line-number syntax
 [alias]
+    amend = commit -a --amend --no-edit
+    show-alias = config --get-regexp ^alias\\.
+    lol = log --oneline --branches --decorate --graph
+    shibe = show-branch --current
+    ded = !git branch --merged master^
     s = status
     sb = status -s -b
     #############
@@ -132,22 +128,72 @@
     squash = "!f(){ git reset --soft HEAD~${1} && git commit --edit -m\"$(git log --format=%B --reverse HEAD..HEAD@{1})\"; };f"
 [color]
     ui = true
-[color "branch"]
-    current = yellow bold
-    local = green bold
-    remote = cyan bold
-[color "diff"]
-    meta = yellow bold
-    frag = magenta bold
-    old = red bold
-    new = green bold
-    whitespace = red reverse
-[color "status"]
-    added = green bold
-    changed = yellow bold
-    untracked = red bold
-[url "https://"]
-    insteadOf = git://
-[push]
-    default = simple
+# [color "diff"]
+#     meta = yellow bold
+#     frag = magenta bold
+#     old = red bold
+#     new = green bold
+#     whitespace = red reverse
+# [url "https://"]
+#     insteadOf = git://
+# [push]
+#     default = simple
 
+[advice]
+    addEmptyPathspec = true
+
+[blame]
+coloring = repeatedLines
+markUnblamables = true
+markIgnoredlines = true
+
+[branch]
+sort = -committerdate
+
+[checkout]
+defaultRemote = origin
+
+[color]
+branch = auto
+diff = auto
+status = auto
+
+[column]
+ui = auto
+
+[diff]
+mnemonicPrefix = true
+wsErrorHighlight = all
+colorMoved = dimmed-zebra
+wordDiff = color
+algorithm = minimal
+
+[fetch]
+prune = true
+pruneTags = true
+output = compact
+parallel = 0
+
+[grep]
+extendedRegexp = true
+
+[help]
+autoCorrect = 1
+
+[push]
+default = current
+followTags = true
+
+[rebase]
+stat = true
+
+[showBranch]
+default = HEAD
+default = master
+
+[status]
+relativePaths = false
+short = false
+branch = true
+# [safe]
+# 	directory = C:/Users/Notandi/.emacs.d
