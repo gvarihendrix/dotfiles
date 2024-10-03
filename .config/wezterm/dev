@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 rm -rf ~/.config/wezterm
-rsync -a "$(pwd)" ~/.config
+ln -s "$(pwd)" ~/.config/wezterm
