@@ -2,7 +2,7 @@ switch (uname)
     case Darwin
         eval (/opt/homebrew/bin/brew shellenv)
         fnm --log-level quiet env --use-on-cd | source
-        source ~/.asdf/asdf.fish
+        source /opt/homebrew/opt/asdf/libexec/asdf.fish
         echo "This is Darwin/Apple"
     case Linux
         echo "This is Linux"
