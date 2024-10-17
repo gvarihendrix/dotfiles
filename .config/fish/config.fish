@@ -1,7 +1,6 @@
 switch (uname)
     case Darwin
         eval (/opt/homebrew/bin/brew shellenv)
-        fnm --log-level quiet env --use-on-cd | source
         source /opt/homebrew/opt/asdf/libexec/asdf.fish
         echo "This is Darwin/Apple"
     case Linux
@@ -21,10 +20,6 @@ set -U fish_key_binding fish_vi_key_binding
 set -Ux EDITOR nvim
 set -Ux FZF_DEFAULT_COMMAND "fd -H -E '.git'"
 set -Ux VISUAL nvim
-
-if not set -q $WEZTERM_PANE
-    set -x NVIM_LISTENT_ADDRESS "/tmp/nvim$WEZTERM_PANE"
-end
 
 fish_add_path $HOME/.config/bin
 
