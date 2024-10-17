@@ -5,9 +5,6 @@
 -- * disable/enabled LazyVim plugins
 -- * override the configuration of LazyVim plugins
 return {
-  -- add gruvbox
-  { "ellisonleao/gruvbox.nvim" },
-
   -- Git related plugins
   { "tpope/vim-fugitive" },
   { "tpope/vim-rhubarb" },
@@ -56,11 +53,6 @@ return {
         end, { expr = true, buffer = bufnr, desc = "Jump to previous hunk" })
       end,
     },
-  },
-
-  {
-    "rose-pine/neovim",
-    name = "rose-pine",
   },
 
   -- Configure LazyVim to load rose pine
