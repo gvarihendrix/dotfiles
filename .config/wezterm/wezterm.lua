@@ -1,6 +1,7 @@
 local wezterm = require("wezterm")
 local act = wezterm.action
 local _ = require("status_bar")
+local _ = require("user_var_changed")
 local k = require("utils/keys")
 
 local config = {}

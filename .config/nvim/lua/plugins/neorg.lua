@@ -18,6 +18,18 @@ return {
             default_workspace = "notes",
           },
         },
+        -- ["core.intergrations.treesitter"] = {},
+        -- ["core.autocommands"] = {},
+        -- ["core.esupports.indent"] = {},
+        -- ["core.completion"] = {},
+        -- ["core.intergrations.nvim-cmp"] = {},
+        ["core.ui"] = {},
+        ["core.queries.native"] = {},
+        ["core.presenter"] = {
+          config = {
+            zen_mode = "zen-mode",
+          },
+        },
       },
     })
 
