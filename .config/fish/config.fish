@@ -7,8 +7,7 @@ switch (uname)
         echo "This is Linux"
 end
 
-
-fish_ssh_agent
+# fish_ssh_agent
 starship init fish | source
 zoxide init fish | source
 direnv hook fish | source
@@ -33,4 +32,107 @@ function fish_right_prompt -d "Write out the right prompt"
     date '+%H:%M'
 end
 
+function awsgo
+    set -e AWS_ACCESS_KEY_ID
+    set -e AWS_SECRET_ACCESS_KEY
+    set -e AWS_SESSION_TOKEN
+    set -gx AWS_PROFILE $argv[1]
+    
+    # Try to get caller identity, if it fails, do SSO login
+    if not aws sts get-caller-identity >/dev/null 2>&1
+        aws sso login
+    end
+    
+    # Export credentials to environment
+    eval (aws configure export-credentials --format env)
+end
+
+# Create completion function for awsgo
+function __fish_aws_profiles
+    # Read AWS profiles from config file
+    string match -r '^\[profile (.+)\]' < $HOME/.aws/config | string replace -r '^\[profile (.+)\]' '$1'
+end
+
+# function unset 
+#     set --erase --no-scope-shadowing $argv
+# end 
+
+# Register completion for awsgo
+complete -c awsgo -f -a "(__fish_aws_profiles)" -d "AWS profile"
+
+
+function sshagent_findsockets
+	find /tmp -uid (id -u) -type s -name agent.\* 2>/dev/null
+end
+
+function sshagent_testsocket
+    if [ ! -x (command which ssh-add) ] ;
+        echo "ssh-add is not available; agent testing aborted"
+        return 1
+    end
+
+    if [ X"$argv[1]" != X ] ;
+    	set -xg SSH_AUTH_SOCK $argv[1]
+    end
+
+    if [ X"$SSH_AUTH_SOCK" = X ]
+    	return 2
+    end
+
+    if [ -S $SSH_AUTH_SOCK ] ;
+        ssh-add -l > /dev/null
+        if [ $status = 2 ] ;
+            echo "Socket $SSH_AUTH_SOCK is dead!  Deleting!"
+            rm -f $SSH_AUTH_SOCK
+            return 4
+        else ;
+            echo "Found ssh-agent $SSH_AUTH_SOCK"
+            return 0
+        end
+    else ;
+        echo "$SSH_AUTH_SOCK is not a socket!"
+        return 3
+    end
+end
+
+
+function ssh_agent_init
+    # ssh agent sockets can be attached to a ssh daemon process or an
+    # ssh-agent process.
+    set -l AGENTFOUND 0
+
+    # Attempt to find and use the ssh-agent in the current environment
+    if sshagent_testsocket ;
+        set AGENTFOUND 1
+    end
+
+    # If there is no agent in the environment, search /tmp for
+    # possible agents to reuse before starting a fresh ssh-agent
+    # process.
+    if [ $AGENTFOUND = 0 ];
+        for agentsocket in (sshagent_findsockets)
+            if [ $AGENTFOUND != 0 ] ;
+	            break
+            end
+            if sshagent_testsocket $agentsocket ;
+	       set AGENTFOUND 1
+	    end
+
+        end
+    end
+
+    # If at this point we still haven't located an agent, it's time to
+    # start a new one
+    if [ $AGENTFOUND = 0 ] ;
+        echo need to start a new agent
+        eval (ssh-agent -c)
+    end
+
+    # Finally, show what keys are currently in the agent
+    # ssh-add -l
+end
+
+ssh_agent_init
+
 alias vim=nvim
+alias tf=terraform
