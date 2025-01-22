@@ -32,25 +32,53 @@ function fish_right_prompt -d "Write out the right prompt"
     date '+%H:%M'
 end
 
-function awsgo
+function awsgo --description "Login to AWS using SSO and kubernetes if --kube or -k flags are set"
     set -e AWS_ACCESS_KEY_ID
     set -e AWS_SECRET_ACCESS_KEY
     set -e AWS_SESSION_TOKEN
     set -gx AWS_PROFILE $argv[1]
-    
+
+    argparse h/help k/kube -- $argv
+
+    if set -ql _flag_help
+        echo "Usage: awsgo [-h|--help] [-k|--kube] [profile]"
+        echo "If -k or --kube are set then the function will try to connect to kubernetes cluster as well"
+        return 0
+    end
+
     # Try to get caller identity, if it fails, do SSO login
     if not aws sts get-caller-identity >/dev/null 2>&1
         aws sso login
     end
-    
+
     # Export credentials to environment
     eval (aws configure export-credentials --format env)
+
+    # Check if we want to connect to kubernetes cluster as well.
+    if set -ql _flag_kube
+        kubeconnect
+    end
+end
+
+function kubeconnect
+    set -l credentials $(aws sts get-caller-identity)
+    set -l account "$(echo "$credentials" | jq -r .Account)"
+    set -l kube_context "$(kubectl config get-clusters | rg -o "\S+:$account:\S+" | head -n 1)"
+
+    echo "Kube context that you are trying to connecting to $kube_context"
+    set -l length_of_context $(string length $kube_context)
+
+    if test $length_of_context -eq 0
+        echo "No kube context for acccount named $account"
+    else
+        kubectl config use-context "$kube_context"
+    end
 end
 
 # Create completion function for awsgo
 function __fish_aws_profiles
     # Read AWS profiles from config file
-    string match -r '^\[profile (.+)\]' < $HOME/.aws/config | string replace -r '^\[profile (.+)\]' '$1'
+    string match -r '^\[profile (.+)\]' <$HOME/.aws/config | string replace -r '^\[profile (.+)\]' '$1'
 end
 
 # function unset 
@@ -59,37 +87,38 @@ end
 
 # Register completion for awsgo
 complete -c awsgo -f -a "(__fish_aws_profiles)" -d "AWS profile"
+complete -c kubeconnect -d "Connect to kubernetes cluster, note this is only setup to be used when you have already logged into AWS"
 
 
 function sshagent_findsockets
-	find /tmp -uid (id -u) -type s -name agent.\* 2>/dev/null
+    find /tmp -uid (id -u) -type s -name agent.\* 2>/dev/null
 end
 
 function sshagent_testsocket
-    if [ ! -x (command which ssh-add) ] ;
+    if [ ! -x (command which ssh-add) ]
         echo "ssh-add is not available; agent testing aborted"
         return 1
     end
 
-    if [ X"$argv[1]" != X ] ;
-    	set -xg SSH_AUTH_SOCK $argv[1]
+    if [ X"$argv[1]" != X ]
+        set -xg SSH_AUTH_SOCK $argv[1]
     end
 
     if [ X"$SSH_AUTH_SOCK" = X ]
-    	return 2
+        return 2
     end
 
-    if [ -S $SSH_AUTH_SOCK ] ;
-        ssh-add -l > /dev/null
-        if [ $status = 2 ] ;
+    if [ -S $SSH_AUTH_SOCK ]
+        ssh-add -l >/dev/null
+        if [ $status = 2 ]
             echo "Socket $SSH_AUTH_SOCK is dead!  Deleting!"
             rm -f $SSH_AUTH_SOCK
             return 4
-        else ;
+        else
             echo "Found ssh-agent $SSH_AUTH_SOCK"
             return 0
         end
-    else ;
+    else
         echo "$SSH_AUTH_SOCK is not a socket!"
         return 3
     end
@@ -102,28 +131,28 @@ function ssh_agent_init
     set -l AGENTFOUND 0
 
     # Attempt to find and use the ssh-agent in the current environment
-    if sshagent_testsocket ;
+    if sshagent_testsocket
         set AGENTFOUND 1
     end
 
     # If there is no agent in the environment, search /tmp for
     # possible agents to reuse before starting a fresh ssh-agent
     # process.
-    if [ $AGENTFOUND = 0 ];
+    if [ $AGENTFOUND = 0 ]
         for agentsocket in (sshagent_findsockets)
-            if [ $AGENTFOUND != 0 ] ;
-	            break
+            if [ $AGENTFOUND != 0 ]
+                break
             end
-            if sshagent_testsocket $agentsocket ;
-	       set AGENTFOUND 1
-	    end
+            if sshagent_testsocket $agentsocket
+                set AGENTFOUND 1
+            end
 
         end
     end
 
     # If at this point we still haven't located an agent, it's time to
     # start a new one
-    if [ $AGENTFOUND = 0 ] ;
+    if [ $AGENTFOUND = 0 ]
         echo need to start a new agent
         eval (ssh-agent -c)
     end
