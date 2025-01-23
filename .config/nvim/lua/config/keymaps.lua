@@ -84,3 +84,6 @@ end)
 vim.keymap.set("n", "gR", function()
   require("trouble").open("lsp_references")
 end)
+
+vim.keymap.set("n", "<leader>gp", "<cmd>BlameToggle window<CR>", { desc = "Toogle git blame" })
+vim.keymap.set("n", "<leader>gv", "<cmd>BlameToggle virtual<CR>", { desc = "Toogle git blame with virtual text" })
