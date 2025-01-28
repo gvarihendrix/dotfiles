@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+export instances=$(aws ec2 describe-instances |
+	jq -r '.Reservations[].Instances[] | {InstanceName: (.Tags[] | select(.Key == "Name").Value), InstanceId: .InstanceId, PrimaryPrivateIP: .PrivateIpAddress}')
+
+export selected=$(echo $instances | jq -r '.InstanceName' | fzf --height=40% --preview "echo \$instances | jq 'select(.InstanceName == \"$(echo {})\")'|yq -p json")
+
+export instance=$(echo $instances | jq -r "select(.InstanceName == \"$selected\")|.InstanceId")
+
+aws ssm start-session --target $instance

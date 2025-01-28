@@ -2,9 +2,7 @@ switch (uname)
     case Darwin
         eval (/opt/homebrew/bin/brew shellenv)
         source /opt/homebrew/opt/asdf/libexec/asdf.fish
-        echo "This is Darwin/Apple"
     case Linux
-        echo "This is Linux"
 end
 
 # fish_ssh_agent
@@ -24,9 +22,16 @@ fish_add_path $HOME/.config/bin
 
 if status is-interactive
     # Commands to run in interactive sessions can go here
+    eval (zellij setup --generate-auto-start fish | string collect)
 end
 
 set -x LANG en_US.UTF-8
+
+if set -q ZELLIJ
+else
+    # Start zellij if it is not already running
+    zellij
+end
 
 function fish_right_prompt -d "Write out the right prompt"
     date '+%H:%M'
@@ -115,7 +120,7 @@ function sshagent_testsocket
             rm -f $SSH_AUTH_SOCK
             return 4
         else
-            echo "Found ssh-agent $SSH_AUTH_SOCK"
+            # printf "Found ssh-agent $SSH_AUTH_SOCK"
             return 0
         end
     else
