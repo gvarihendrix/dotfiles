@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+rm -rf ~/.config/zellij/
+ln -s "$(pwd)" ~/.config/zellij

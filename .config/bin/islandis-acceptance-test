@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+export PRE_RELEASE_BRANCH=$(git for-each-ref --sort=-committerdate refs/heads/pre-release/ --format='%(refname:short)' | awk -F'/' '{print $2}' | tr -d '.' | head -n1)
+export AWS_COGNITO_USERNAME=system-e2e
+export AWS_COGNITO_PASSWORD=$(aws ssm get-parameter --name "/k8s/system-e2e/password" --with-decryption --query 'Parameter.Value' --output text)
+
+TEST_ENVIRONMENT=dev BASE_URL_PREFIX=$PRE_RELEASE_BRANCH npx playwright test -c apps/system-e2e/src "islandis/.*/smoke" --project=islandis
