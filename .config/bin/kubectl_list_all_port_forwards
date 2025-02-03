@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+kubectl get svc --all-namespaces -o json |
+	jq '.items[] | {name:.metadata.name, ns:.metadata.namespace, p:.spec.ports[] } | select( .p.nodePort != null ) | "\(.ns)/\(.name): localhost:\(.p.nodePort) -> \(.p.port) -> \(.p.targetPort)"'
