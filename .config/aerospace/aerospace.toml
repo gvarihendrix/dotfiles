@@ -153,6 +153,25 @@ alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
 
+# Lets setup a multi-monitor setup
+# The first matching pattern will be used
+[workspace-to-monitor-force-assignment]
+1 = 1 # Monitor sequence number from left to right. 1-based indexing
+2 = [
+  'main',
+  'Y32p-30',
+  # Workstation monitor
+  'LEN T34w-20',
+] # TODO: set workstation screen in                      # Main monitor
+# 3 = 'secondary'                 # Non-main monitor in case when there are only two monitors
+3 = '^built-in retina display$' # Case insensitive regex match
+4 = [
+  'secondary',
+  'VG27A',
+  # Workstation monitor
+  'T24i-30',
+] # You can specify multiple patterns.
+
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]

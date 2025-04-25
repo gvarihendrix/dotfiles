@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+rm -rf ~/.config/aerospace
+ln -s "$(pwd)" ~/.config/aerospace

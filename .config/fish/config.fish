@@ -1,7 +1,7 @@
 switch (uname)
     case Darwin
         eval (/opt/homebrew/bin/brew shellenv)
-        source /opt/homebrew/opt/asdf/libexec/asdf.fish
+        source /opt/homebrew/opt/asdf/share/fish/vendor_completions.d/asdf.fish
     case Linux
 end
 
@@ -17,6 +17,20 @@ set -U fish_key_binding fish_vi_key_binding
 set -Ux EDITOR nvim
 set -Ux FZF_DEFAULT_COMMAND "fd -H -E '.git'"
 set -Ux VISUAL nvim
+
+# ASDF configuration code
+if test -z $ASDF_DATA_DIR
+    set _asdf_shims "$HOME/.asdf/shims"
+else
+    set _asdf_shims "$ASDF_DATA_DIR/shims"
+end
+
+# Do not use fish_add_path (added in Fish 3.2) because it
+# potentially changes the order of items in PATH
+if not contains $_asdf_shims $PATH
+    set -gx --prepend PATH $_asdf_shims
+end
+set --erase _asdf_shims
 
 fish_add_path $HOME/.config/bin
 
@@ -94,7 +108,6 @@ end
 complete -c awsgo -f -a "(__fish_aws_profiles)" -d "AWS profile"
 complete -c kubeconnect -d "Connect to kubernetes cluster, note this is only setup to be used when you have already logged into AWS"
 
-
 function sshagent_findsockets
     find /tmp -uid (id -u) -type s -name agent.\* 2>/dev/null
 end
@@ -128,7 +141,6 @@ function sshagent_testsocket
         return 3
     end
 end
-
 
 function ssh_agent_init
     # ssh agent sockets can be attached to a ssh daemon process or an
@@ -170,3 +182,12 @@ ssh_agent_init
 
 alias vim=nvim
 alias tf=terraform
+# Alias for corepack commands 
+alias yarn="corepack yarn"
+alias yarnpkg="corepack yarnpkg"
+alias pnpm="corepack pnpm"
+alias pnpx="corepack pnpx"
+alias npm="corepack npm"
+alias npx="corepack npx"
+set -gx VOLTA_HOME "$HOME/.volta"
+set -gx PATH "$VOLTA_HOME/bin" $PATH
