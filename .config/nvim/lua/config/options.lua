@@ -4,3 +4,5 @@
 vim.opt.wrap = true
 vim.g.snacks_animate = false
 vim.wo.relativenumber = true
+
+vim.g.lazyvim_picker = "snacks"
