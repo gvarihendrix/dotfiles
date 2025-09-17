@@ -191,3 +191,4 @@ alias npm="corepack npm"
 alias npx="corepack npx"
 set -gx VOLTA_HOME "$HOME/.volta"
 set -gx PATH "$VOLTA_HOME/bin" $PATH
+set -gx PATH "$HOME/.local/bin" $PATH
