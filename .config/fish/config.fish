@@ -47,6 +47,11 @@ else
     zellij
 end
 
+# Load Terraform Cloud credentials
+if test -f ~/.terraform.d/credentials.tfrc.json
+    set -gx TF_TOKEN_app_terraform_io (cat ~/.terraform.d/credentials.tfrc.json | jq -r '.credentials."app.terraform.io".token')
+end
+
 function fish_right_prompt -d "Write out the right prompt"
     date '+%H:%M'
 end
