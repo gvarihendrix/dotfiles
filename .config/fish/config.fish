@@ -50,6 +50,7 @@ end
 # Load Terraform Cloud credentials
 if test -f ~/.terraform.d/credentials.tfrc.json
     set -gx TF_TOKEN_app_terraform_io (cat ~/.terraform.d/credentials.tfrc.json | jq -r '.credentials."app.terraform.io".token')
+    set -gx TF_CLI_CONFIG_FILE ~/.terraform.d/credentials.tfrc.json
 end
 
 function fish_right_prompt -d "Write out the right prompt"
@@ -60,6 +61,7 @@ function awsgo --description "Login to AWS using SSO and kubernetes if --kube or
     set -e AWS_ACCESS_KEY_ID
     set -e AWS_SECRET_ACCESS_KEY
     set -e AWS_SESSION_TOKEN
+    set -e AWS_REGION
     set -gx AWS_PROFILE $argv[1]
 
     argparse h/help k/kube -- $argv
@@ -183,17 +185,58 @@ function ssh_agent_init
     # ssh-add -l
 end
 
+function env2fish
+    if not isatty
+        while read line
+            set --append argv $line
+        end
+    end
+    string replace -- = ' ' $argv |
+        string replace -r -- '^export' --export |
+        string replace -r '^(.)' 'set -g $1'
+end
+
 ssh_agent_init
 
 alias vim=nvim
 alias tf=terraform
+alias tg=terragrunt
 # Alias for corepack commands 
-alias yarn="corepack yarn"
-alias yarnpkg="corepack yarnpkg"
-alias pnpm="corepack pnpm"
-alias pnpx="corepack pnpx"
-alias npm="corepack npm"
-alias npx="corepack npx"
+# alias yarn="corepack yarn"
+# alias yarnpkg="corepack yarnpkg"
+# alias pnpm="corepack pnpm"
+# alias pnpx="corepack pnpx"
+# alias npm="corepack npm"
+# alias npx="corepack npx"
+alias less=nvimpager
 set -gx VOLTA_HOME "$HOME/.volta"
 set -gx PATH "$VOLTA_HOME/bin" $PATH
 set -gx PATH "$HOME/.local/bin" $PATH
+set -gx TG_TF_PATH /opt/homebrew/bin/tofu
+
+if test -e "$HOME/.config/ai/env.fish"
+    echo ".config/ai/env.fish exists"
+    source "$HOME/.config/ai/env.fish"
+end
+
+function envsource
+    for line in (cat $argv | grep -v '^#' | grep -v '^\s*$')
+        set -l kv (string split -m 1 '=' $line)
+        set -l key $kv[1]
+        set -l val $kv[2]
+        # strip surrounding single/double quotes
+        set val (string trim --chars='"\'' -- $val)
+        # expand $HOME and $VAR references
+        set val (string replace -r '\$HOME' $HOME -- $val)
+        set -gx $key $val
+    end
+end
+
+# Load kiro's shell integration (inline autocomplete) only in genuine
+# interactive terminals -- NOT in KiroCrew-spawned agent/gateway shells.
+# Those spawn a figterm pty-wrapper subshell that is never reaped on abrupt
+# parent death, leaking ~2 ptys per session until kern.tty.ptmx_max is hit.
+# KIROCREW_SPAWNED is set only in those agent shells, so this skips exactly them.
+if status is-interactive; and not set -q KIROCREW_SPAWNED; and string match -q "$TERM_PROGRAM" kiro
+    . (kiro --locate-shell-integration-path fish)
+end
