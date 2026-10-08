@@ -1,0 +1,143 @@
+#!/bin/bash
+
+REGION="eu-west-1"
+LOCAL_PORT="${LOCAL_PORT:-5432}"
+
+if [ -z "$1" ]; then
+  echo "Notkun: mms-rds <cluster-identifier> [database]"
+  echo ""
+  echo "Tiltækir cluster:"
+  aws rds describe-db-clusters --region $REGION |
+    jq -r '.DBClusters[].DBClusterIdentifier'
+  exit 1
+fi
+
+CLUSTER_ID="$1"
+DB_NAME="${2:-postgres}"
+
+echo "🔍 Finn cluster..."
+CLUSTER=$(aws rds describe-db-clusters \
+  --db-cluster-identifier "$CLUSTER_ID" \
+  --region $REGION |
+  jq -r '.DBClusters[0]')
+
+if [ -z "$CLUSTER" ] || [ "$CLUSTER" = "null" ]; then
+  echo "❌ Cluster '$CLUSTER_ID' fannst ekki"
+  echo ""
+  echo "Tiltækir cluster:"
+  aws rds describe-db-clusters --region $REGION |
+    jq -r '.DBClusters[].DBClusterIdentifier'
+  exit 1
+fi
+
+CLUSTER_ARN=$(echo "$CLUSTER" | jq -r '.DBClusterArn')
+DB_USER=$(echo "$CLUSTER" | jq -r '.MasterUsername')
+DB_HOST=$(echo "$CLUSTER" | jq -r '.Endpoint')
+REMOTE_PORT=$(echo "$CLUSTER" | jq -r '.Port // 5432')
+
+echo "✅ Cluster fundinn: $CLUSTER_ARN"
+
+# Athugum hvort local port sé þegar í notkun
+if lsof -i :"$LOCAL_PORT" >/dev/null 2>&1; then
+  echo "⚠️  Port $LOCAL_PORT er þegar í notkun:"
+  lsof -i :"$LOCAL_PORT"
+  echo "Lokaðu fyrri tengingu eða keyrðu með öðru porti (t.d. LOCAL_PORT=5433 mms-rds ...)"
+  exit 1
+fi
+
+echo "🔍 Finn bastion host..."
+BASTION_ID=$(aws ec2 describe-instances \
+  --region "$REGION" \
+  --filters "Name=instance-state-name,Values=running" "Name=tag:Bastion,Values=true" \
+  --query "Reservations[].Instances[0].InstanceId" \
+  --output text)
+
+if [ -z "$BASTION_ID" ] || [ "$BASTION_ID" = "None" ]; then
+  BASTION_ID=$(aws ec2 describe-instances \
+    --region "$REGION" \
+    --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=*bastion*" \
+    --query "Reservations[].Instances[0].InstanceId" \
+    --output text)
+fi
+
+if [ -z "$BASTION_ID" ] || [ "$BASTION_ID" = "None" ]; then
+  echo "❌ Enginn virkur bastion host fannst í $REGION"
+  exit 1
+fi
+
+echo "✅ Bastion fundinn: $BASTION_ID"
+
+# Tryggjum að bakgrunnsferlinu sé lokað við exit eða CTRL-C
+SSM_PID=""
+cleanup() {
+  if [ -n "$SSM_PID" ] && kill -0 "$SSM_PID" 2>/dev/null; then
+    echo ""
+    echo "🛑 Lokar SSM port forwarding (PID: $SSM_PID)..."
+    kill "$SSM_PID" 2>/dev/null
+    wait "$SSM_PID" 2>/dev/null
+  fi
+}
+trap cleanup EXIT INT TERM
+
+SSM_PARAMS=$(jq -nc \
+  --arg host "$DB_HOST" \
+  --arg port "$REMOTE_PORT" \
+  --arg localPort "$LOCAL_PORT" \
+  '{"host": [$host], "portNumber": [$port], "localPortNumber": [$localPort]}')
+
+echo "🔌 Opna SSM göng: localhost:$LOCAL_PORT -> $DB_HOST:$REMOTE_PORT (gegnum $BASTION_ID)..."
+aws ssm start-session \
+  --region "$REGION" \
+  --target "$BASTION_ID" \
+  --document-name AWS-StartPortForwardingSessionToRemoteHost \
+  --parameters "$SSM_PARAMS" >/dev/null 2>&1 &
+SSM_PID=$!
+
+echo "⏳ Bíð eftir að port forwarding verði virkt á porti $LOCAL_PORT..."
+READY=false
+for i in {1..30}; do
+  if lsof -i :"$LOCAL_PORT" >/dev/null 2>&1; then
+    READY=true
+    break
+  fi
+  if ! kill -0 "$SSM_PID" 2>/dev/null; then
+    echo "❌ SSM port forwarding hætti óvænt"
+    exit 1
+  fi
+  sleep 0.5
+done
+
+if [ "$READY" != "true" ]; then
+  echo "❌ Tími rann út við að bíða eftir SSM port forwarding"
+  exit 1
+fi
+echo "✅ Göng opin á porti $LOCAL_PORT"
+
+echo "🔍 Finn secret..."
+SECRET_ID=$(aws secretsmanager list-secrets --region "$REGION" |
+  jq -r --arg arn "$CLUSTER_ARN" \
+    '.SecretList[] | select(.Tags[]? | .Key == "aws:rds:primaryDBClusterArn" and .Value == $arn) | .Name')
+
+if [ -z "$SECRET_ID" ]; then
+  echo "❌ Secret fannst ekki fyrir cluster: $CLUSTER_ARN"
+  exit 1
+fi
+
+echo "✅ Secret fundið: $SECRET_ID"
+
+export PGPASSWORD=$(aws secretsmanager get-secret-value \
+  --secret-id "$SECRET_ID" \
+  --region "$REGION" \
+  --query 'SecretString' \
+  --output text | jq -r '.password')
+
+# Ef ekki er valin database, sýna lista yfir tiltækar databases
+if [ -z "$2" ]; then
+  echo ""
+  echo "Tiltækar databases:"
+  psql -h localhost -p "$LOCAL_PORT" -U "$DB_USER" -d postgres -t -c "SELECT datname FROM pg_database WHERE datistemplate = false ORDER BY datname;" 2>/dev/null | sed 's/^[ \t]*//' | grep -v '^$'
+  echo ""
+fi
+
+echo "🚀 Tengi við $CLUSTER_ID/$DB_NAME sem $DB_USER..."
+psql -h localhost -p "$LOCAL_PORT" -U "$DB_USER" -d "$DB_NAME"
