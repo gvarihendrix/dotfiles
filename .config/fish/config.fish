@@ -34,14 +34,21 @@ set --erase _asdf_shims
 
 fish_add_path $HOME/.config/bin
 
-if status is-interactive
-    # Commands to run in interactive sessions can go here
+if status is-interactive; and not set -q KIROCREW_SPAWNED
+    # Commands to run in interactive sessions can go here.
+    # Guarded against KIROCREW_SPAWNED: KiroCrew agent shells are interactive
+    # but must not auto-start a zellij server — those servers outlive the
+    # session's scratch dir and leak ptys (orphaned `zellij --server`).
     eval (zellij setup --generate-auto-start fish | string collect)
 end
 
 set -x LANG en_US.UTF-8
 
-if set -q ZELLIJ
+if set -q ZELLIJ; or set -q KIROCREW_SPAWNED
+    # Already inside zellij, OR a KiroCrew-spawned agent shell: do NOT start a
+    # server. Agent shells are short-lived and their scratch dir is deleted on
+    # session end, so a zellij server started here becomes an orphan holding
+    # ptys forever (the per-session zellij-server leak).
 else
     # Start zellij if it is not already running
     zellij
